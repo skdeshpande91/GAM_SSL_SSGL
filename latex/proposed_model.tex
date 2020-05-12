@@ -1,0 +1,114 @@
+%!TEX root = GAM_SSL_SSGL.tex
+
+To begin, we first focus on the partially linear additive model (PLAM)
+\begin{equation}
+\label{eq:general_model}
+Y = \alpha_{0} + \sum_{j = 1}^{p}{[\alpha_{j}X_{j} + f_{j}(X_{j})]} + \sigma \varepsilon; \quad \varepsilon \sim \N(0,1),
+\end{equation}
+
+We will further assume that the covariates $X_{j}$'s have been centered and scaled so that $\mathbf{1}^{\top}X_{j} = 0$ and $X_{j}^{\top}X_{j} = \text{I}_{n}.$
+We decompose each nonlinear function $g_{j}$ into a linear combination of $B$ basis functions
+$$
+f_{j}(x_{ij}) = \sum_{b = 1}^{B}{\beta_{jb}\phi_{jb}(x_{ij})} = \bphi_{ij}^{\top}\bbeta_{j},
+$$
+where $\bphi_{ij} = (\phi_{j1}(x_{ij}), \ldots, \phi_{jB}(x_{ij}))^{\top}$ is the vector of basis function evaluations for observation $i$ and $\bbeta_{j} = (\beta_{j1}, \ldots, \beta_{jB})^{\top}$ is a vector of unknown weights.
+Let $\bPhi_{j}$ be the $n \times B$ matrix with rows $\phi_{ij}^{\top}$ and let $\tilde{\bPhi}_{j}$ be the $n \times (B + 2)$ matrix $[\mathbf{1} \quad X_{j} \quad \bPhi_{j}].$
+We will assume throughout that $\tilde{\bPhi}^{\top}\tilde{\bPhi} = nI_{n}.$\footnote{So long as $D + 2 < n,$ given any set of basis functions $\phi_{jd}'$ we may construct the columns of $\tilde{\bPhi}$ by Gram-Schmidt. The scaling of $n$ makes some of the threshold derivations later a bit easier.}.
+This choice ensures that $f_{j}$ cannot explain any linear variation in $X_{j}$ and ensures identifiability.
+%Throughout, we assume that the covariates $X_{j}$ have been centered and scaled and that the basis elements have been chosen so that the matrix $\tilde{\bPhi}_{j}$ is orthonormal.
+%So long as the $B \leq n + 1,$ we can always construct such $\tilde{\bPhi}_{j}$ using the Gram-Schmidt procedure.
+%With this choice of basis, we ensure that $f_{j}$ cannot explain any linear variation in $X_{j}$ or constant variation in $Y,$ while also ensuring identifiability.
+
+We are now in a position to translate the semi-parametric regression problem in Equation~\eqref{eq:general_model} into a (possibly high-dimensional) linear regression problem:
+\begin{equation}
+\label{eq:general_model_linear_form}
+y_{i} = \alpha_{0} + \bx_{i}^{\top}\balpha + \sum_{j = 1}^{p}{\bphi_{ij}^{\top}\bbeta_{j}} + \sigma \epsilon_{i}; \quad \epsilon_{i} \sim \N(0,1),
+\end{equation}
+
+
+For each covariate $X_{j},$ there are three possibilities: (i) $X_{j}$ has no effect on the outcome $Y$ (i.e. $\alpha_{j} = 0$ and $\bbeta_{j} = \mathbf{0}_{B}$), (ii) $X_{j}$ has a constant non-zero effect on $Y$ (i.e. $\alpha_{j} \neq 0$ but $\bbeta_{j} = \mathbf{0}_{B}$), or (iii) $X_{j}$ has a non-constant non-zero effect (i.e. at least one of $\alpha_{j} \neq 0$ or $\bbeta_{j} \neq \mathbf{0}_{B}$). 
+We are primarily interested in determining which of these possibilities is true. 
+Following \citet{Bai2020} and others, if $X_{j}$ is determined to have a non-negligible non-linear effect on $Y$ (i.e. $\bbeta_{j} \neq \mathbf{0}_{B}),$ we will include the entire basis function expansion of $g_{j}$ in our model.
+As such, we aim to compute sparse estimates of $\balpha$ and $\bB = [\bbeta_{1} \cdots \bbeta_{p}] \in \R^{n \times B}$ such that entire columns of $B$ are precisely zero.  
+
+To this end, we place spike-and-slab Lasso (SSL; \citet{RockovaGeorge2018}) priors on the elements of linear main effects $\alpha_{j}$ and a spike-and-slab Group Lasso (SSGL; \citet{Bai2020}) prior on the weights for the non-linear effects $\bB.$
+Specifically, we introduce a collection of $p$ pairs of binary indicators $\Gamma = \{\bgamma_{1}, \ldots, \bgamma_{p}\}$ with $\bgamma_{j} = (\gamma_{j1}, \gamma_{j2}) \in \{0,1\}^{2}$ and model
+\begin{align*}
+\pi(\alpha, \bB \mid \Gamma) &= \prod_{j = 1}^{p}{\pi(\alpha_{j} \mid \gamma_{j})\pi(\bbeta_{j} \mid \gamma_{j})} \\
+\pi(\alpha_{j} \mid \gamma_{j}) &= (1 - \gamma_{j1})\bPsi_{L}(\alpha_{j} \mid \lambda_{0}) + \gamma_{j1}\bPsi_{L}(\alpha_{j} \mid \lambda_{1}) \\
+\pi(\beta_{j} \mid \gamma_{j}) &= (1 - \gamma_{j2})\bPsi_{G}(\bbeta_{j} \mid \xi_{0}) + \gamma_{j2}\bPsi_{G}(\bbeta_{j} \mid \xi_{1})\\
+p(\Gamma \mid \btheta) &\propto \prod_{j = 1}^{p}{\left[\theta_{00}^{(1 - \gamma_{j1})(1 - \gamma_{j2})}\theta_{01}^{(1 - \gamma_{j1})\gamma_{j2}}\theta_{10}^{\gamma_{j1}(1 - \gamma_{j2})}\theta_{11}^{\gamma_{j1}\gamma_{j2}}\right]} \\
+p(\sigma^{2}) &\propto \sigma^{-2}
+\end{align*}
+where $\btheta = (\theta_{00}, \theta_{01}, \theta_{10}, \theta_{11})^{\top}$ is a vector of non-negative inclusion probabilities and
+\begin{align*}
+\bPsi_{L}(\alpha \mid \lambda) &\propto \lambda\exp\{-\lambda\lvert\alpha\rvert\} & \bPsi_{G}(\bbeta \mid \xi) &\propto \xi^{B}\exp\{-\xi\lVert \bbeta \rVert_{2}\}.
+\end{align*}
+
+
+For notational compactness, let $\Omega = \{\balpha, \bB, \sigma^{2}, \btheta\}$ be the collection of continuous parameters. 
+Additionally, define
+$$
+p^{\star}(\alpha, \btheta) = \frac{(\theta_{10} + \theta_{11})\Psi_{L}(\alpha; \lambda_{1})}{(\theta_{10} + \theta_{11})\Psi_{L}(\alpha; \lambda_{1}) + (\theta_{01} + \theta_{00})\Psi_{L}(\alpha; \lambda_{0})}
+$$
+and
+$$
+q^{\star}(\bbeta, \btheta) = \frac{(\theta_{01} + \theta_{11})\Psi_{G}(\bbeta; \xi_{1})}{(\theta_{01} + \theta_{11})\Psi_{G}(\bbeta; \xi_{1}) + (\theta_{10} + \theta_{00})\Psi_{G}(\bbeta; \xi_{0})}
+$$
+so that $\E[\gamma_{j1} \mid \Omega] = p^{\star}(\alpha_{j}, \btheta)$ and $\E[\gamma_{j2} \mid \Omega] = q^{\star}(\bbeta_{j}, \btheta).$
+
+%Further, for $\delta_{1}, \delta_{2} \in \{0,1\},$ let $p_{j}^{\star}(\delta_{1}, \delta_{2}) = \P(\gamma_{j1} = \delta_{1}, \gamma_{j2} = \delta_{2} \mid \Omega, \by).$ 
+%We immediately compute 
+%$$
+%p^{\star}_{j}(\gamma_{1}, \gamma_{2}; \Omega) \propto \theta_{\delta_{1}\delta_{2}}\bPsi_{L}(\alpha_{j} \mid \lambda_{\delta_{1}})\bPsi_{GL}(\bbeta_{j} \mid \xi_{\delta_{2}}).
+%$$
+%Further, introduce the penalty functions
+%\begin{align*}
+%\lambda^{\star}_{j}(\Omega) &= \lambda_{0} - (\lambda_{0} - \lambda_{1})(p^{\star}_{j}(1,0;\Omega) + p^{\star}_{j}(1,1;\Omega)) \\
+%\xi^{\star}_{j}(\Omega) &= \xi_{0} - (\xi_{0} - \xi_{1})(p^{\star}_{j}(0,1; \Omega) + p^{\star}_{j}(1,1; \Omega)).
+%\end{align*}
+%These two penalty functions linearly interpolate between the respective spike and slab penalties.
+
+
+
+A few further remarks are in order
+\begin{remark}
+Observe that the the SSL and SSGL priors place zero prior probability on exactly sparse $\balpha$ and $\bB$ values. 
+However, as we will show later, local optima of the resulting posteriors are exactly sparse and can be computed using an Expectation--Conditional Maximization algorithm.
+\end{remark}
+
+\begin{remark}
+Observe that as written, there are four possibilities for each covariate $X_{j}$:
+\begin{enumerate}
+\item{$X_{j}$ has no predictive effect on $Y$ (i.e. $\gamma_{j1} = \gamma_{j2} = 0$)}
+\item{$X_{j}$ has both a linear effect and a non-linear effect on $Y$ (i.e. $\gamma_{j1} = \gamma_{j0} = 1$)}
+\item{$X_{j}$ has both a linear effect and a non-linear effect on $Y$ (i.e. $\gamma_{j1} = 1, \gamma_{j2} = 0$)}
+\item{$X_{j}$ has no linear effect but a non-negligible non-linear effect on $Y$ (i.e. $\gamma_{j1} = 0, \gamma_{j2} =  1$)}
+\end{enumerate}
+For the moment, we will leave the prior on $\btheta$ unspecified.
+We will later explore many possible restriction and see if we can introduce various forms of hierarchy/reluctance directly through the prior on $\bgamma_{j}.$
+For instance, setting $\theta_{01} = 0$ enforces a \textbf{strong hierarchy} assumption that $X_{j}$ enters~\eqref{eq:general_model} nonlinearly only if it enters it linearly as well.
+It may be useful to explore how to introduce some type of \textit{competition} between including $X_{j}$ linearly or non-linearly.
+Ultimately, since we'll be doing optimization rather than stochastic search, it shouldn't be especially difficult to enforce various restrictions.
+\textcolor{blue}{[skd]: I'm kind of keen to look into the shadow Dirichlet distributions introduced in \citet{Frigyik2010} to see if it's reasonable to impose monotonicity or other types of constraints on the spike-and-slab probabilities.}
+\end{remark}
+
+
+\begin{remark}
+We will focus first on the PLAM but almost everything we will do carries over the generalized PLAM in which
+$$
+g^{-1}(\E[Y \mid X]) = \alpha_{0} + \sum_{j = 1}^{p}{[\alpha_{j}X_{j} + f_{j}(X_{j})]}
+$$
+for a given link function $g.$
+\end{remark}
+
+
+
+\begin{comment}
+\begin{align*}
+p(\bgamma_{j} \mid \theta_{0}, \theta_{1}, \theta_{2}) \propto [\theta_{0}\theta_{1}^{\gamma_{j2}}(1 - \theta_{1})^{1-\gamma_{j2}}]^{\gamma_{j1}}[(1 - \theta_{0})\theta_{2}^{\gamma_{j2}}(1 - \theta_{2})^{1-\gamma_{j2}}]^{\gamma_{j1}} \\
+p(\theta_{0}, \theta_{1}, \theta_{2}) &\propto \prod_{k = 0}^{2}{\theta_{k}^{a_{k} -1}(1 - \theta_{k})^{b_{k} - 1}} \\
+p(\sigma^{2}) &\propto (\sigma^{2})^{-\frac{\nu}{2}}\exp\{-\frac{\nu\lambda}{2\sigma^{2}}\}.
+\end{align*}
+where $a_{k}, b_{k} > 0$ are positive constants for $k = 0, 1, 2$ and $\nu, \lambda > 0$ are fixed positive constants.
+\end{comment} 

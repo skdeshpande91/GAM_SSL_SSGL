@@ -1,0 +1,120 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm, float, fullpage, graphicx, multirow,parskip, subcaption, setspace}
+\usepackage{csquotes}
+\usepackage{comment}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{bm}
+\usetikzlibrary{shapes.geometric, positioning}
+\usetikzlibrary{quotes, angles}
+\usepackage{rotating}
+\usepackage{hyperref}
+\usepackage{natbib}
+
+\definecolor{PennRed}{RGB}{152, 30 50}
+\definecolor{PennBlue}{RGB}{0, 44, 119}
+\definecolor{PennGreen}{RGB}{94, 179,70}
+\definecolor{PennViolet}{RGB}{141, 76, 145}
+\definecolor{PennSkyBlue}{RGB}{14, 118, 188}
+\definecolor{PennOrange}{RGB}{243, 117, 58}
+\definecolor{PennBrightRed}{RGB}{223,82, 78}
+
+
+\hypersetup{pdfborder = {0 0 0.5 [3 3]}, colorlinks = true, linkcolor = PennBrightRed, citecolor = PennSkyBlue}
+
+\bibliographystyle{apalike}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+
+\newcommand{\numbereqn}{\addtocounter{equation}{1}\tag{\theequation}} % use \numberthis to add number in align* mode
+
+\title{Structure Discovery in Additive Models with Spike-and-Slab Priors}
+%\author{Raj Agrawal, Ray Bai, Sameer K. Deshpande}
+
+\begin{document}
+
+% Define lots of local macros here
+\def\by{\mathbf{y}}
+\def\bY{\mathbf{Y}}
+\def\bx{\mathbf{x}}
+\def\bX{\mathbf{X}}
+
+\def\bz{\bm{z}}
+
+\def\bphi{\boldsymbol{\phi}}
+\def\bpsi{\boldsymbol{\psi}}
+\def\br{\mathbf{r}} % partial residuals
+\def\bR{\mathbf{R}}% full residual
+\def\bg{\mathbf{g}}
+\def\balpha{\boldsymbol{\alpha}}
+\def\bbeta{\boldsymbol{\beta}}
+\def\bB{\mathbf{B}}
+\def\bphi{\boldsymbol{\phi}}
+\def\bPhi{\boldsymbol{\Phi}}
+\def\bpsi{\boldsymbol{\psi}}
+\def\bPsi{\boldsymbol{\Psi}}
+
+
+\def\bgamma{\boldsymbol{\gamma}} % pair of indicators
+\def\btheta{\boldsymbol{\theta}} % set of inclusion probabilities
+\def\tilbtheta{\tilde{\btheta}}
+\def\R{\mathbb{R}}
+\def\P{\mathbb{P}}
+\def\E{\mathbb{E}}
+\def\N{\mathcal{N}}
+
+
+% End of macro definitions
+
+\newpage
+
+\onehalfspacing
+%\doublespacing
+
+\section{Introduction}
+\label{sec:introduction}
+\input{introduction}
+
+
+\section{Proposed Model}
+\label{sec:proposed_model}
+\input{proposed_model}
+
+\section{Computational Approach}
+\label{sec:computation}
+\input{computation}
+
+\newpage
+\bibliography{GAM_SSL_SSGL.bib}
+
+\end{document}
+

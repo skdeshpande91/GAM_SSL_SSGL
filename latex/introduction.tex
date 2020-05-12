@@ -1,0 +1,25 @@
+%!TEX root = GAM_SSL_SSGL.tex
+
+We consider sparse generalized partially linear additive models
+$$
+g(\E[Y \mid X]) = \alpha_{0} + \sum_{j = 1}^{p}{F_{j}(X_{j})} = \alpha_{0} + \sum_{j = 1}^{p}{[\alpha_{j}X_{j} + f_{j}(X_{j})]}
+$$
+where the $\alpha_{j}$'s are unknown constants and the $f_{j}$'s are unknown non-linear functions and $g$ is a known link function.
+
+One often wants to know whether (i) $X_{j}$ has no effect, (ii) $X_{j}$ has a constant effect, or (iii) $X_{j}$ has a non-linear effect.
+\textcolor{blue}{[skd]: I'm willing to bet that if we ran some early sparse GAM procedures they'd be pretty bad at fitting constant effects. I think methods like GAMSEL \citep{ChouldechovaHastie2015} and SPLAM \citep{Lou2016} would do well here but the reluctant additive model approach seems to perform better.}
+As \citet{TayTibshirani2020} note:
+\begin{quote}
+\singlespacing
+\small
+When building a sparse additive model, the algorithm needs to make a choice: for some signal in the response, should we attribute it to a linear term in some feature $X_{j}$, or should we attribute it to a non-linear term in some (possibly other) feature $X_{k}$? Some of the earlier sparse additive methods ignore this choice: the $F_{j}$'s are all modeled as non-linear functions. This may result in needlessly complex models when having some of the $F_{j}$'s as linear functions would have sufficed. Later methods recognize this deficiency and have the flexibility to model each $F_{j}$ as either a linear or non-linear function through clever choices of penalty functions. However, the tradeoff between having a linear or non-linear function is often implicit and controlled via a tuning parameter.
+\end{quote}
+
+
+
+\textbf{Motivating examples?}
+%I think it could be interesting to look at gene x environment studies. Basically one has data on $p$ genetic markers or SNPs and also observes $R$ environmental variables.
+%One way of fitting the models is to do something like $Y= \alpha + \beta^{\top}G + \gamma^{\top}E + \delta(G \ast E)$ where $G$ is vector of genetic information, $E$ is vector of environmental variables, and $G \ast E$ is the vector of pairwise products between the elements of $G$ and $E.$
+%We could 
+%Good references are \citet{Ma2011} and \citet{Ma2014}.
+%The idea could be to treat this as a varying coefficient model and, for simplicity, let the effect of genetic variables be \textbf{additive} in environmental variables. 

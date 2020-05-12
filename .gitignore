@@ -1,0 +1,12 @@
+*.Rhistory
+*.ipynb_checkpoints/
+*.ipynb
+latex/*.aux
+latex/*.synctex.gz
+latex/*.log
+latex/*.bbl
+latex/*.blg
+latex/*.pdf
+SpikeSlabGAM/src/*.o
+testing_scripts/src/*.o
+testing_scripts/scripts/*.Rmd
