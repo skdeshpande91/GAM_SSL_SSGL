@@ -12,7 +12,7 @@ $$
 f_{j}(x_{ij}) = \sum_{b = 1}^{B}{\beta_{jb}\phi_{jb}(x_{ij})} = \bphi_{ij}^{\top}\bbeta_{j},
 $$
 where $\bphi_{ij} = (\phi_{j1}(x_{ij}), \ldots, \phi_{jB}(x_{ij}))^{\top}$ is the vector of basis function evaluations for observation $i$ and $\bbeta_{j} = (\beta_{j1}, \ldots, \beta_{jB})^{\top}$ is a vector of unknown weights.
-Let $\bPhi_{j}$ be the $n \times B$ matrix with rows $\phi_{ij}^{\top}$ and let $\tilde{\bPhi}_{j}$ be the $n \times (B + 2)$ matrix $[\mathbf{1} \quad X_{j} \quad \bPhi_{j}].$
+Let $\bPhi_{j}$ be the $n \times B$ matrix with rows $\phi_{ij}^{\top}$ and let $\tilde{\bPhi}_{j}$ be the $n \times (B + 2)$ matrix $[\mathbf{1}, X_{j}, \bPhi_{j}].$
 We will assume throughout that $\tilde{\bPhi}^{\top}\tilde{\bPhi} = nI_{n}.$\footnote{So long as $D + 2 < n,$ given any set of basis functions $\phi_{jd}'$ we may construct the columns of $\tilde{\bPhi}$ by Gram-Schmidt. The scaling of $n$ makes some of the threshold derivations later a bit easier.}.
 This choice ensures that $f_{j}$ cannot explain any linear variation in $X_{j}$ and ensures identifiability.
 %Throughout, we assume that the covariates $X_{j}$ have been centered and scaled and that the basis elements have been chosen so that the matrix $\tilde{\bPhi}_{j}$ is orthonormal.
@@ -42,7 +42,7 @@ p(\sigma^{2}) &\propto \sigma^{-2}
 \end{align*}
 where $\btheta = (\theta_{00}, \theta_{01}, \theta_{10}, \theta_{11})^{\top}$ is a vector of non-negative inclusion probabilities and
 \begin{align*}
-\bPsi_{L}(\alpha \mid \lambda) &\propto \lambda\exp\{-\lambda\lvert\alpha\rvert\} & \bPsi_{G}(\bbeta \mid \xi) &\propto \xi^{B}\exp\{-\xi\lVert \bbeta \rVert_{2}\}.
+\bPsi_{L}(\alpha \mid \lambda) &\propto \lambda\exp\{-\lambda\lvert\alpha\rvert\} & \bPsi_{G}(\bbeta \mid \xi) &\propto \xi^{D}\exp\{-\xi\lVert \bbeta \rVert_{2}\}.
 \end{align*}
 
 

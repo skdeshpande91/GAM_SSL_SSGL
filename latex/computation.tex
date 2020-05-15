@@ -44,9 +44,10 @@ where $\bR_{\beta} = \bY - \bX \balpha$ and $\text{pen}(\bbeta_{j} \vert \btheta
 
 Using the fact that $\bX^{\top}\bX = n\text{I}_{p}$ and $\bPhi_{j}^{\top}\bPhi_{j} = n\text{I}_{D}$ along with Lemma 2.1 of \citet{RockovaGeorge2018} and Proposition 1 of \citet{Bai2020}, the Karush-Kuhn-Tucker (KKT) conditions for $\hat{\alpha}_{j}$ and $\hat{\bbeta}_{j}$ are
 \begin{align}
-\hat{\balpha}_{j} = n^{-1}\left[ \lvert z^{(\alpha)}_{j} \rvert - \sigma^{2}\lambda^{\star}(\hat{\alpha}_{j}, \btheta) \right]_{+}\text{sign}(z^{(\alpha)}_{j}) \label{eq:alpha_kkt} \\
-\hat{\bbeta}_{j} = n^{-1}\left[1 - \frac{\sigma^{2}\xi^{\star}(\hat{\bbeta}_{j}; \btheta)}{\lVert \bz_{\beta,j} \rVert_{2}}\right]_{+}\bz_{\beta,j}
+\label{eq:alpha_kkt}
+\hat{\balpha}_{j} = n^{-1}\left[ \lvert z^{(\alpha)}_{j} \rvert - \sigma^{2}\lambda^{\star}(\hat{\alpha}_{j}, \btheta) \right]_{+}\text{sign}(z^{(\alpha)}_{j}) \\
 \label{eq:beta_kkt}
+\hat{\bbeta}_{j} = n^{-1}\left[1 - \frac{\sigma^{2}\xi^{\star}(\hat{\bbeta}_{j}; \btheta)}{\lVert \bz_{\beta,j} \rVert_{2}}\right]_{+}\bz_{\beta,j}
 \end{align}
 where $z_{\alpha,j} = X_{j}^{\top}(\bR_{\alpha} - \sum_{j' \neq j}{\hat{\alpha}_{j'}X_{j'}}$ and $\bz_{\beta,j} = \Phi_{j}^{\top}[\bR_{\beta} - \sum_{j' \neq j}{\Phi_{j'}\hat{\bbeta}_{j'}}].$
 The conditions~\eqref{eq:alpha_kkt} and~\eqref{eq:beta_kkt} immediately suggest cyclical updates of the form
@@ -56,20 +57,18 @@ The conditions~\eqref{eq:alpha_kkt} and~\eqref{eq:beta_kkt} immediately suggest 
 \end{align}
 
 Conditions~\eqref{eq:alpha_kkt} and ~\eqref{eq:beta_kkt} and the corresponding coordinate-wise updates~\eqref{eq:alpha_update} and~\eqref{eq:beta_update} are extremely similar to those encountered in the usual Lasso and group Lasso problems, respectively.
-The key difference is the presence of the penalty functions $\lambda^{\star}$ and $\xi^{\star}$ which evolve alongside our estimates of $\Omega.$
-Recall that when $\lvert \alpha_{j} \rvert$ is small (resp. large), $\lambda^{\star}(\alpha_{j},\btheta)$ is close to the spike penalty $\lambda_{0}$ (resp. slab penalty $\lambda_{1}$).
-As a result, in carrying out the coordinate update~\eqref{eq:alpha_update}, the threshold $\sigma^{2}\lambda^{\star}(\alpha_{j},\btheta)$ is larger for smaller values of $\vert \alpha_{j}.$
-
-This selective shrinkage is a by-product 
-It is important to point out that the self-adaptive thresholds depend not only on the values of $\balpha$ and $\bB$ but also on the overall sparsity levels, as measured by $\btheta.$
-Further, in the actual update
+The key difference is the presence of the penalty functions $\lambda^{\star}$ and $\xi^{\star}$ that evolve alongside our estimates of $\Omega$ and allow for adaptive thresholding in the coordinate updates~\eqref{eq:alpha_update} and~\eqref{eq:beta_update}.
+I%n particular, observe that if $\lvert \alpha_{j} \rvert$ is large, the penalty function$\lambda^{\star}(\alpha_{j}, \btheta)$ will be close to the slab penalty $\lambda_{1},$ which is much smaller than the spike penalty $\lambda_{1}.$
+%As a result, if the current estimate $\alpha^{\text{old}}_{j}$ is large in magnitude, we subject $z_{j}$ to a \textit{smaller} threshold.
+In effect this introduces selective shrinkage: larger estimates of $\alpha_{j}$ and $\bbeta_{j}$ are shrunk less than smaller estimates. 
+This selective shrinkage is a byproduct of modeling the uncertainty about $\bgamma.$
 
 It turns out that conditions~\eqref{eq:alpha_kkt} and~\eqref{eq:beta_kkt} are necessary but not sufficient when $\lambda_{1} \ll \lambda_{0}$ and $\xi_{1} \ll \xi_{0}.$
 As a result, simply following the updates in~\eqref{eq:alpha_update} and~\eqref{eq:beta_update} can result in termination in sub-optimal local optima. 
 We instead use refined characterizations of $\hat{\alpha}$ and $\hat{\bB}$ from \citet{RockovaGeorge2018} and \citet{Bai2020} that introduce an additional hard threshold to~\eqref{eq:alpha_update} and ~\eqref{eq:beta_update}.
-We defer further details of our full algorithm to Appendix~\ref{app:algorithm_derivation}. 
+We defer further details of our full algorithm to Appendix~\ref{app:algorithm}. 
 
-\textcolor{blue}{[skd]: To ease exposition, simply state the KKT conditions in the main text. Point out the bit about adaptive thresholds and note that they depend on several aspects: they depend on the overall ``sparsity'' level $\btheta$, the value of the parameters being penalized/shrunk (larger parameter values are shrunk to zero less aggressively than smaller parameters), and on the estimate of the noise $\sigma^{2}.$ These are three characteristics of coordinate-wise algorithms for MAP estimation with continuous spike-and-slab priors. They stand in sharp contrast, however, to conventional penalization techniques that assume the noise level is known. The presence of $\sigma^{2}$ in the KKT conditions makes clear how important having a sense of the noise variance is for determining what constitutes a non-zero signal} 
+%\textcolor{blue}{[skd]: To ease exposition, simply state the KKT conditions in the main text. Point out the bit about adaptive thresholds and note that they depend on several aspects: they depend on the overall ``sparsity'' level $\btheta$, the value of the parameters being penalized/shrunk (larger parameter values are shrunk to zero less aggressively than smaller parameters), and on the estimate of the noise $\sigma^{2}.$ These are three characteristics of coordinate-wise algorithms for MAP estimation with continuous spike-and-slab priors. They stand in sharp contrast, however, to conventional penalization techniques that assume the noise level is known. The presence of $\sigma^{2}$ in the KKT conditions makes clear how important having a sense of the noise variance is for determining what constitutes a non-zero signal} 
 
 
 %Both of these algorithms are a blend of soft- and hard-thresholding with \textit{self-adapting} thresholds.
@@ -79,6 +78,8 @@ We defer further details of our full algorithm to Appendix~\ref{app:algorithm_de
 % The selective shrinkage is a by-product of the spike-and-slab prior. The fact that we have a hierarchical model on $\Gamma$ allows the amount of shrinkage to depend not only on the values of $\balpha$ and $\bB$ but also on the overall linear sparsity and non-linear sparsity levels.
 %Observe that $\lambda^{\star}$ and $\xi^{\star}$ interpolate between the respective spike and slab penalties.
 
+
+\begin{comment}
 \textbf{Updating $\balpha$.}
 To update $\balpha$ conditionally given $\bY, \bB, \btheta,$ and $\sigma^{2},$ we define the partial residual
 $$
@@ -113,7 +114,9 @@ $$
 and $z_{j}^{\text{old}} = X_{j}^{\top}[\bR_{\alpha} - \sum_{j' \neq j}{\alpha^{\text{old}}_{j'}X_{j'}}].$
 
 \textcolor{blue}{[skd]: Rewrite this to note that we can really only use $\Delta_{\alpha}$ when $\sigma(\lambda_{0} - \lambda_{1}) > 2\sqrt{n}$ and $g(0,\btheta) > 0$ where $g(x;\btheta) = [\lambda^{\star}(x,\btheta) - \lambda_{1}]^{2} + \frac{2n}{\sigma^{2}}\log{p^{\star}(0,\btheta)}.$ These are the formulas given in \citet{Moran2019}.}
+\end{comment}
 
+\begin{comment}
 \textbf{Updating $\bB$}.
 Now let $\bR_{\beta} = \bY - \bX \balpha.$
 We wish to solve
@@ -186,7 +189,7 @@ We further compute
 \frac{\partial^{2} Q}{\partial \theta_{11}\partial \theta_{11}} &= \frac{\delta_{11}}{\theta_{11}^{2}} + \frac{\delta_{00}}{\theta_{11}^{2}} +  \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]^{2}} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]^{2}}
 \end{align*}
 
-
+\end{comment}
 \begin{comment}
 
 Specifically, we compute

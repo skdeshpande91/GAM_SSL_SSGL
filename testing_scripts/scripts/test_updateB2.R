@@ -9,12 +9,13 @@ library(splines)
 set.seed(129)
 n <- 100
 p <- 200
-X <- matrix(runif(n_train*p, 0,1), nrow = n_train, ncol= p)
+X_raw <- matrix(runif(n*p, 0,1), nrow = n, ncol= p)
 
 D <- 2
 Phi <- array(dim = c(n, D, p))
+
 for(j in 1:p){
-  splineTemp <- splines::ns(X[,j], df = D)
+  splineTemp <- splines::ns(X_raw[,j], df = D)
   tmp_Phi <- matrix(nrow = n, ncol= D)
   tmp_Phi[,1] <- splineTemp[,1]
   for(jj in 2:D){
@@ -38,9 +39,11 @@ for(j in 1:p){
 ####
 # Generate data
 ####
+
+
 sigma <- 0.75
-R <- sin(pi*X[,1]) + 2.5 * (X[,3]^2 - 0.5) + 
-  exp(X[,4]) + 3 * X[,5] + sigma * rnorm(n,0,1)
+R <- sin(pi*X_raw[,1]) + 2.5 * (X_raw[,3]^2 - 0.5) + 
+  exp(X_raw[,4]) + 3 * X_raw[,5] + sigma * rnorm(n,0,1)
 
 
 xi1 <- 1
@@ -50,10 +53,13 @@ theta <- c(0.25,0.5,0.1, 0.15)
 
 norm <- function(x){sqrt(sum(x*x))}
 
-test_0 <- test_update_B(B_init, R, Phi,sigma*sigma, xi1, 5 * sqrt(D) * xi1, theta, verbose = FALSE, max_iter = 5000)
+test_0 <- test_update_B(B_init, R, Phi,sigma*sigma, xi1, 2 * sqrt(D) * xi1, theta, verbose = FALSE, max_iter = 10000)
 B_norm0 <- apply(test_0$B, MARGIN = 2, FUN = norm)
 which(B_norm0 != 0)
 
-test_1 <- test_update_B(test_0$B, R, Phi, sigma*sigma, xi1, 100 * sqrt(D) * xi1, theta, verbose = FALSE, max_iter = 5000)
+test_1 <- test_update_B(B_init, R, Phi, sigma*sigma, xi1, 10 * sqrt(D) * xi1, theta, verbose = FALSE, max_iter = 10000)
 B_norm1 <- apply(test_1$B, MARGIN = 2, FUN = norm)
 which(B_norm1 != 0)
+
+
+

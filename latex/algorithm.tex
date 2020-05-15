@@ -1,0 +1,199 @@
+%!TEX root = GAM_SSL_SSGL.tex
+
+We first derive fully the refined coordinate ascent algorithms used to update $\alpha_{j}$ and $\bbeta_{j}.$
+We then describe the Newton algorithm used to update $\btheta.$
+
+\subsection{Updating $\alpha_{j}$}
+
+Recall that we must solve
+\begin{align*}
+\hat{\balpha} = \argmax_{\balpha}\left\{-\frac{1}{2}\lVert \bR_{\alpha} - X\balpha \rVert_{2}^{2} + \sigma^{2}\sum_{j = 1}^{p}{\text{pen}_{\alpha}(\alpha_{j} \vert \theta)}\right\}
+\end{align*}
+where $\bR_{\alpha} = \bY - \sum_{j = 1}^{p}{\bPhi_{j}\bbeta_{j}}$ is a vector of \textit{partial} residuals and $\text{pen}_{\alpha}(\alpha \vert \btheta) = \log[p(\alpha\vert\btheta)/p(0\vert\btheta)].$
+A necessary condition for $\hat{\alpha}_{j}$ is
+$$
+\hat{\balpha}_{j} = n^{-1}\left[ \lvert z_{\alpha,j} \rvert - \sigma^{2}\lambda^{\star}(\hat{\alpha}_{j}, \btheta) \right]_{+}\text{sign}(z_{\alpha,j}) 
+$$
+where $z_{\alpha,j} = X_{j}^{\top}(\bR_{\alpha} - \sum_{j' \neq j}{\hat{\alpha}_{j'}X_{j'}}).$ 
+
+When $\lambda_{1} \ll \lambda_{0},$ this condition will not be sufficient. 
+The following proposition, is a generalization of \citet{RockovaGeorge2018}'s Theorems 2.1 and 2.2 first made by \citet{Moran2019}, gives a more refined characterization of $\hat{\alpha}_{j}.$
+
+\begin{proposition}[\citet{Moran2019}]
+\label{prop:refined_alpha}
+The entires of the global mode $\hat{\balpha}$ satisfy
+$$
+\hat{\alpha}_{j} = n^{-1}\left[ \lvert z_{\alpha,j} \rvert - \sigma^{2}\lambda^{\star}(\hat{\alpha}_{j}, \btheta) \right]_{+}\text{sign}(z^{(\alpha)}_{j}) \mathbf{1}(\lvert z_{\alpha,j} \rvert \geq \Delta_{\alpha}) 
+$$
+where 
+$$
+\Delta_{\alpha} = \inf_{t > 0}\{nt/2 - \sigma^{2}\text{pen}_{\alpha}(t, \btheta)/t\} \leq \sigma^{2}\lambda^{\star}(0,\btheta).
+$$
+
+Furthermore, if $\sigma(\lambda_{0} - \lambda_{1}) > 2\sqrt{n}$ and $\sigma^{2}(\lambda^{\star}(0,\btheta) + 2n\log{p^{\star}(0,\btheta)} > 0,$ the threshold $\Delta_{\alpha}$ can be further bounded by $ \Delta^{L}_{\alpha} < \Delta_{\alpha} < \Delta^{U}_{\alpha}$ where
+\begin{align*}
+\Delta^{L}_{\alpha} &= \lambda_{1}\sigma^{2} + \sqrt{2n\sigma^{2}\log[1/p^{\star}(0,\btheta)] - \sigma^{4}d} \\
+\Delta^{U}_{\alpha} &= \lambda_{1}\sigma^{2} + \sqrt{2n\sigma^{2}\log[1/p^{\star}(0,\btheta)]}
+\end{align*} 
+and 
+$$
+0 < d < \frac{2n}{\sigma^{2}} - \left(\frac{n}{\sigma^{2}(\lambda_{0} - \lambda_{1})} - \frac{\sqrt{2n}}{\sigma}\right)^{2}.
+$$
+\end{proposition}
+
+In light of Proposition~\ref{prop:refined_alpha}, we find $\hat{\balpha}$ by cycling over updates of the form
+\begin{equation}
+\label{eq:refined_alpha_update}
+\alpha^{\text{new}}_{j} = n^{-1}\left[ \lvert z^{\text{old}}_{j} \rvert - \sigma^{2}\lambda^{\star}(\hat{\alpha}_{j}, \btheta) \right]_{+}\text{sign}(z^{\text{old}}_{\alpha,j})\mathbf{1}(\lvert z^{\text{old}}_{\alpha,j}\rvert \leq \Delta^{U}_{\alpha})
+\end{equation}
+where we set $\Delta^{U}_{\alpha} = \sigma^{2}\lambda^{\star}(0, \btheta)$ if either $\sigma(\lambda_{1} - \lambda_{0}) \leq 2\sqrt{n}$ or $\sigma^{2}(\lambda^{\star}(0,\btheta) + 2n\log{p^{\star}(0,\btheta)} \leq 0.$
+
+
+\subsection{Updating $\mathbf{B}$}
+ 
+Recall that we must solve
+$$
+\hat{\bB} = \argmax_{\bB}\{\frac{1}{2}\lVert \bR_{\beta} - \sum_{j = 1}^{p}{\bPhi_{j}\bbeta_{j}} \rVert_{2}^{2} + \sigma^{2}\sum_{j = 1}^{p}{\text{pen}_{\bbeta}(\bbeta_{j} \vert \btheta)} \},
+$$
+where $\bR_{\beta} = \bY - \bX \balpha$ and $\text{pen}(\bbeta_{j} \vert \btheta) = \log[p(\bbeta_{j} \vert \btheta)/p(\mathbf{0}_{D}\lvert \btheta)].$
+From the KKT condition, we know that 
+$$
+\hat{\bbeta}_{j} = n^{-1}\left[1 - \frac{\sigma^{2}\xi^{\star}(\hat{\bbeta}_{j}; \btheta)}{\lVert \bz_{\beta,j} \rVert_{2}}\right]_{+}\bz_{\beta,j}
+$$
+where $\bz_{\beta,j} = \Phi_{j}^{\top}[\bR_{\beta} - \sum_{j' \neq j}{\Phi_{j'}\hat{\bbeta}_{j'}}].$
+
+When $\xi_{1} \ll \xi_{0}$ this characterization may not be sufficient.
+The following proposition, which combines Proposition 2 and Theorem 1 of \citet{Bai2020} give a more refined characterization of $\hat{\bbeta}_{j}$.
+\begin{proposition}[\citet{Bai2020}]
+\label{prop:refined_beta}
+The global mode $\hat{\bbeta}_{j} = \mathbf{0}$ if and only if $\lVert \bz_{\beta,j}\rVert_{2} \leq \Delta_{\beta},$ where
+$$
+\Delta_{\beta} = \inf_{\bbeta}\{n\lVert \bbeta \rVert_{2}/2 - \sigma^{2}\text{pen}_{\beta}(\bbeta, \btheta)/\lVert \bbeta_{2}\} \leq \sigma^{2}\xi^{\star}(\mathbf{0},\btheta).
+$$
+Furthemore, if $\sigma(\xi_{0} - \xi_{1}) > 2\sqrt{n}$ and $\sigma^{2}\left[\xi^{\star}(\mathbf{0},\btheta) - \xi_{1}\right]^{2} + 2n\log{q^{\star}(\mathbf{0},\btheta)} > 0,$ the threshold $\Delta_{\beta}$ can be further bounded by $\Delta^{L}_{\beta} < \Delta_{\beta} < \Delta^{U}_{\beta}$ where
+\begin{align*}
+\Delta^{L}_{\beta} &= \xi_{1}\sigma^{2} + \sqrt{2n\sigma^{2}\log[1/q^{\star}(\mathbf{0},\btheta)] - \sigma^{4}d} \\
+\Delta^{U}_{\beta} &= \xi_{1}\sigma^{2} + \sqrt{2n\sigma^{2}\log[1/q^{\star}(\mathbf{0},\btheta)]}
+\end{align*} 
+and 
+$$
+0 < d < \frac{2n}{\sigma^{2}} - \left(\frac{n}{\sigma^{2}(\xi_{0} - \xi_{1})} - \frac{\sqrt{2n}}{\sigma}\right)^{2}.
+$$
+
+\end{proposition}
+In light of Proposition~\ref{prop:refined_beta}, we find $\hat{\bbeta}_{j}$ by cycling over updates of the form
+\begin{equation}
+\label{eq:refined_beta_update}
+\bbeta_{j}^{\text{new}} = n^{-1}\left[1 - \frac{\sigma^{2}\xi^{\star}(\hat{\bbeta}_{j}; \btheta)}{\lVert \bz^{\text{old}}_{\beta,j} \rVert_{2}}\right]_{+}\bz^{\text{old}}_{\beta,j} \mathbf{1}(\lVert \bz_{\beta,j} \rVert_{2} \geq \Delta^{U}_{\bbeta})
+\end{equation}
+where we set $\Delta^{U}_{\beta} = \sigma^{2}\xi^{\star}(0, \btheta)$ if either $\sigma(\xi_{0} - \xi_{1}) \leq 2\sqrt{n}$ or $\sigma^{2}\left[\xi^{\star}(\mathbf{0},\btheta) - \xi_{1}\right]^{2} + 2n\log{q^{\star}(\mathbf{0},\btheta)} \leq 0.$
+
+
+\subsection{Updating $\theta$}
+
+Keeping $\balpha$ and $\bB$ fixed, we want to solve $\hat{\btheta} = \argmin_{\btheta}Q(\btheta; \balpha, \bB)$ where
+$$
+Q(\btheta; \balpha, \bB) = -\log{p(\btheta)} - \sum_{j = 1}^{p}{\log{[p(\alpha_{j} \vert \btheta)} - \log{p(\bbeta_{j} \vert \btheta)}]}.
+$$
+
+We will minimize $Q(\btheta;\balpha, \bbeta)$ using a Newton algorithm.
+Without loss of any generality, we will work with $\tilbtheta = (\theta_{01}, \theta_{10}, \theta_{11})^{\top},$ the vector of the three free parameters of $\btheta.$
+Let $g(\tilbtheta)$ and $H(\tilbtheta)$ be the gradient vector and Hessian matrix of $Q.$
+It turns out that all of the entires in $g$ and $H$ can be expressed in terms of the functions $p^{\star}$ and $q^{\star},$ the marginal densities $p(\alpha \vert \btheta)$ and $p(\bbeta \vert \btheta)$ and $\tilbtheta.$
+
+Specifically we compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{01}} &= -\frac{\delta_{01}}{\theta_{01}} + \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} - \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]} \\
+\frac{\partial Q}{\partial \theta_{10}} &= -\frac{\delta_{10}}{\theta_{10}} + \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} - \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]} \\
+\frac{\partial Q}{\partial \theta_{11}} &= -\frac{\delta_{11}}{\theta_{11}} + \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} - \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}} + \frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]}
+\end{align*}
+
+
+We further compute
+\begin{align*}
+\frac{\partial^{2} Q}{\partial \theta_{01} \partial \theta_{01}} &= \frac{\delta_{01}}{\theta_{01}^{2}} + \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})^{2}} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]^{2}} \\
+\frac{\partial^{2} Q}{\partial \theta_{01}\partial \theta_{10}} &= \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})^{2}} \\
+\frac{\partial^{2} Q}{\partial \theta_{01}\partial \theta_{11}} &= \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})^{2}} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]^{2}}.
+~ & ~ \\
+\frac{\partial^{2} Q}{\partial \theta_{10}\partial\theta_{10}} &= \frac{\delta_{10}}{\theta_{10}^{2}} + \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})^{2}} +\sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]^{2}} \\
+\frac{\partial^{2} Q}{\partial \theta_{10}\partial\theta_{11}} &= \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})^{2}} + \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]^{2}} \\
+~ & ~ \\
+\frac{\partial^{2} Q}{\partial \theta_{11}\partial \theta_{11}} &= \frac{\delta_{11}}{\theta_{11}^{2}} + \frac{\delta_{00}}{\theta_{11}^{2}} +  \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]^{2}} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]^{2}}
+\end{align*}
+
+\begin{comment}
+
+Specifically, we compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{01}} &= \frac{\delta_{01}}{\theta_{01}} - \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} + \sum_{j = 1}^{p}{\frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{p(\bbeta \vert \btheta)}} \\
+&= \frac{\delta_{01}}{\theta_{01}} - \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}\vert\btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}\vert \btheta)}{1 - \theta_{01} - \theta_{11}}\right]} \\
+~&~ \\
+\frac{\partial Q}{\partial \theta_{10}} &= \frac{\delta_{10}}{\theta_{10}} - \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} + \sum_{j = 1}^{p}{\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{p(\alpha_{j}\vert\btheta)}} \\
+~&= \frac{\delta_{10}}{\theta_{10}} - \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} + \sum_{j = 1}^{p}{\left[\frac{p^{\star}(\alpha_{j}, \btheta)}{\theta_{10} + \theta_{11}} - \frac{1 - p^{\star}(\alpha_{j}, \btheta)}{1 - \theta_{10} - \theta_{11}}\right]} \\
+~ &~ \\
+\frac{\partial Q}{\partial \theta_{11}} &= \frac{\delta_{11}}{\theta_{11}} - \frac{\delta_{00}}{\theta_{00}} + \sum_{j = 1}^{p}{\left[\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{p(\alpha_{j}, \btheta)} - \frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{p(\bbeta_{j})}\right]}  \\
+~ & ~ \\
+\end{align*}
+
+\end{comment}
+ 
+ \begin{comment}
+Using the fact that $\theta_{00} = 1 - \theta_{01} - \theta_{10} - \theta_{11},$ we compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{01}} &= \frac{\delta_{01}}{\theta_{01}} - \frac{\delta_{00}}{1 - \theta_{01} - \theta_{10} - \theta_{11}} + \sum_{j = 1}^{p}{\frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{p(\bbeta \vert \btheta)}} \\
+\frac{\partial^{2} Q}{\partial \theta_{01} \partial \theta_{01}} &= -\frac{\delta_{01}}{\theta_{01}^{2}} - \frac{\delta_{00}}{\theta_{00}^{2}} - \sum_{j = 1}^{p}{\frac{[\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})]^{2}}{p(\bbeta_{j} \vert \btheta)^{2}}} \\
+\frac{\partial^{2} Q}{\partial \theta_{01}\partial\theta_{10}} &= -\frac{\delta_{00}}{\theta_{00}^{2}} \\
+\frac{\partial^{2} Q}{\partial \theta_{01}\partial \theta_{11}} &= -\frac{\delta_{00}}{\theta_{00}^{2}} - \sum_{j = 1}^{p}{\frac{[\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})]^{2}}{p(\bbeta_{j} \vert \btheta)^{2}}}
+\end{align*}
+
+
+We similarly compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{10}} &= \frac{\delta_{10}}{\theta_{10}} - \frac{\delta_{00}}{\theta_{00}} + \sum_{j = 1}^{p}{\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{p(\alpha_{j}\vert\btheta)}} \\
+\frac{\partial Q}{\partial \theta_{10}\partial\theta_{10}} &= -\frac{\delta_{10}}{\theta_{10}^{2}} - \frac{\delta_{00}}{\theta_{00}^{2}} -\sum_{j = 1}^{p}{\frac{[\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})]^{2}}{p(\alpha_{j} \vert \btheta)^{2}}} \\
+\frac{\partial Q}{\partial \theta_{10}\partial\theta_{11}} &= -\frac{\delta_{00}}{\theta_{00}^{2}} -\sum_{j = 1}^{p}{\frac{[\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})]^{2}}{p(\alpha_{j} \vert \btheta)^{2}}}
+\end{align*}
+
+Finally we compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{11}} &= \frac{\delta_{11}}{\theta_{11}} - \frac{\delta_{00}}{\theta_{00}} + \sum_{j = 1}^{p}{\left[\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{p(\alpha_{j}, \btheta)} - \frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{p(\bbeta_{j})}\right]} \\
+\frac{\partial Q}{\partial \theta_{11}\theta_{11}} &= -\frac{\delta_{11}}{\theta_{11}^{2}} - \frac{\delta_{00}}{\theta_{11}^{2}} - 
+\end{align*}
+
+
+
+We compute
+\begin{align*}
+\frac{\partial Q}{\partial \theta_{01}} &= -\frac{\delta_{01}}{\theta_{01}} + \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})} + \sum_{j = 1}^{p}{\frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{\left[(\theta_{01} + \theta_{11})\Psi_{G1}(\bbeta_{j}) + (1 - \theta_{01} - \theta_{11})\Psi_{G0}(\bbeta_{j})\right]}} \\
+\frac{\partial Q}{\partial \theta_{10}} &= -\frac{\delta_{10}}{\theta_{10}} + \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})} + \sum_{j = 1}^{p}{\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{\left[(\theta_{10} + \theta_{11})\Psi_{L1}(\alpha_{j}) + (1 - \theta_{10} - \theta_{11})\Psi_{L0}(\alpha_{j})\right]}} \\
+\frac{\partial Q}{\partial \theta_{11}} &= -\frac{\delta_{11}}{\theta_{11}} + \frac{\delta_{00}}{(1 - \theta_{10} - \theta_{11})} + \sum_{j = 1}^{p}{\frac{\Psi_{L1}(\alpha_{j}) - \Psi_{L0}(\alpha_{j})}{\left[(\theta_{10} + \theta_{11})\Psi_{L1}(\alpha_{j}) + (1 - \theta_{10} - \theta_{11})\Psi_{L0}(\alpha_{j})\right]}} \\
+&~~+  \sum_{j = 1}^{p}{\frac{\Psi_{G1}(\bbeta_{j}) - \Psi_{G0}(\bbeta_{j})}{\left[(\theta_{01} + \theta_{11})\Psi_{G1}(\bbeta_{j}) + (1 - \theta_{01} - \theta_{11})\Psi_{G0}(\bbeta_{j})\right]}}
+\end{align*}
+
+
+
+Observe that
+\begin{align*}
+Yay &= -\frac{\delta_{01}}{\theta_{01}} + \frac{\delta_{00}}{(1 - \theta_{01} - \theta_{10} - \theta_{11})} + \sum_{j = 1}^{p}{\left[\frac{q^{\star}(\bbeta_{j}, \btheta)}{\theta_{01} + \theta_{11}} - \frac{1 - q^{\star}(\bbeta_{j}, \btheta)}{1 - \theta_{01} - \theta_{11}}\right]}
+\end{align*}
+
+
+
+%For most choices of prior $p(\btheta),$ we will use a Newton algorithm.
+%To facilitate this, we need to compute the gradient and Hessian of $\log{p(\balpha, \bbeta \vert \btheta)}.$
+
+%$$
+%\frac{\partial \log p(\alpha_{j} \vert \btheta)} {\partial \theta_{11}} 
+%= \frac{\partial \log p(\alpha_{j}; \vert \btheta)}{\partial \theta_{10}}
+%= \frac{\Psi_{L}(\alpha_{j}; \lambda_{1})}{p(\alpha_{j} \vert \btheta)} 
+%= \frac{p^{\star}(\alpha_{j}, \btheta)}{(\theta_{11} + \theta_{10})}
+%$$
+
+\textcolor{blue}{[skd]: I need to check my calculations again but basically the entries in the gradient and Hessian of the objective function for $\btheta$ are expressible in terms of $p^{\star}, q^{\star}$ and $\btheta.$ Will fill in the details later on.}
+
+
+%\begin{align*}
+%\frac{\partial \log{p(\alpha_{j} \vert \btheta)}}{\partial \theta_{11}} &= \frac{\Psi_{L}(\alpha_{j}; \lambda_{1})}{(\theta_{10} + \theta_{11})\Psi_{L}(\alpha_{j};\lambda_{1}) + (\theta_{01} + \theta_{00})\Psi_{L}(\alpha_{j}; \lambda_{0})} \\
+%&= p^{\star}(\alpha_{j}, \btheta)/(\theta_{10} + \theta_{11})
+%\end{align*}
+\end{comment}
